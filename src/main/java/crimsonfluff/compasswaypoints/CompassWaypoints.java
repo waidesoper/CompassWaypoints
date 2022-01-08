@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.object.builder.v1.client.model.FabricModelPredica
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -23,7 +24,7 @@ public class CompassWaypoints implements ModInitializer {
     @Override
     public void onInitialize() {
         initItems.register();
-        FabricModelPredicateProviderRegistry.register(initItems.WAYPOINT_COMPASS_ITEM, new Identifier("angle"), (stack, world, livingEntity,x) -> {
+       FabricModelPredicateProviderRegistry.register(initItems.WAYPOINT_COMPASS_ITEM, new Identifier("angle"), (stack, world, livingEntity,x) -> {
             boolean isLiving = livingEntity != null;
 
             if (!isLiving && !stack.isInFrame() || !stack.hasNbt() || !stack.getNbt().contains(WaypointCompassItem.LODESTONE_POS_KEY)) return 0;
@@ -32,7 +33,8 @@ public class CompassWaypoints implements ModInitializer {
 
             if (world == null) world = (ClientWorld) entity.world;
 
-            int[] blockPos = stack.getNbt().getIntArray("pos");
+            BlockPos blockPos = NbtHelper.toBlockPos(stack.getNbt().getCompound(WaypointCompassItem.LODESTONE_POS_KEY));
+
             double angle;
             double entityAngle = isLiving ? entity.getEyeY() : getFrameAngle((ItemFrameEntity) entity);
 
@@ -66,7 +68,7 @@ public class CompassWaypoints implements ModInitializer {
         return MathHelper.wrapDegrees(180 + entity.getHorizontalFacing().getOffsetY() * 90);
     }
 
-    private double getPosToAngle(int[] pos, Entity entity) {
-        return Math.atan2(pos[2] - entity.getZ(), pos[0] - entity.getX());
+    private double getPosToAngle(BlockPos pos, Entity entity) {
+        return Math.atan2(pos.getZ() - entity.getZ(), pos.getX() - entity.getX());
     }
 }

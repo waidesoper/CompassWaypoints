@@ -2,6 +2,7 @@ package crimsonfluff.compasswaypoints.item;
 
 import crimsonfluff.compasswaypoints.CompassWaypoints;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.CompassItem;
 import net.minecraft.item.ItemStack;
@@ -11,6 +12,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -19,6 +21,9 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
+import net.minecraft.world.poi.PointOfInterestType;
+
+import java.util.Optional;
 
 public class WaypointCompassItem extends CompassItem {
     public static final String LODESTONE_POS_KEY = "LodestonePos";
@@ -58,6 +63,10 @@ public class WaypointCompassItem extends CompassItem {
         }
         return super.useOnBlock(context);
     }*/
+    @Override
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+        return;
+    }
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
@@ -70,7 +79,13 @@ public class WaypointCompassItem extends CompassItem {
         return TypedActionResult.pass(user.getStackInHand(hand));
     }
 
+    public static boolean hasLodestone(ItemStack stack) {
+        NbtCompound nbtCompound = stack.getNbt();
+        return nbtCompound != null && (nbtCompound.contains(LODESTONE_DIMENSION_KEY) || nbtCompound.contains(LODESTONE_POS_KEY));
+    }
+
     private void writeNbt(RegistryKey<World> worldKey, BlockPos pos, NbtCompound nbt) {
+        CompassWaypoints.LOGGER.info(pos);
         nbt.put(LODESTONE_POS_KEY, NbtHelper.fromBlockPos(pos));
         World.CODEC.encodeStart(NbtOps.INSTANCE, worldKey).resultOrPartial(CompassWaypoints.LOGGER::error).ifPresent(nbtElement -> nbt.put(LODESTONE_DIMENSION_KEY, (NbtElement)nbtElement));
         nbt.putBoolean(LODESTONE_TRACKED_KEY, true);
