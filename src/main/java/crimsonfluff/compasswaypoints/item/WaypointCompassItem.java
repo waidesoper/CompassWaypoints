@@ -33,7 +33,7 @@ public class WaypointCompassItem extends Item {
 
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
-        if(!context.getWorld().isClient || (!context.getPlayer().isSneaking() && context.getStack().hasNbt())) return super.useOnBlock(context);
+        if((!context.getPlayer().isSneaking() && context.getStack().hasNbt())) return super.useOnBlock(context);
         BlockPos blockPos = context.getBlockPos();
         World world = context.getWorld();
         world.playSound(null, blockPos, SoundEvents.ITEM_LODESTONE_COMPASS_LOCK, SoundCategory.PLAYERS, 1.0f, 1.0f);
