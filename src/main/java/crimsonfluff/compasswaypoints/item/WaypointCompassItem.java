@@ -37,34 +37,10 @@ public class WaypointCompassItem extends Item {
         BlockPos blockPos = context.getBlockPos();
         World world = context.getWorld();
         world.playSound(null, blockPos, SoundEvents.ITEM_LODESTONE_COMPASS_LOCK, SoundCategory.PLAYERS, 1.0f, 1.0f);
-        PlayerEntity playerEntity = context.getPlayer();
         ItemStack itemStack = context.getStack();
-        if (!playerEntity.getAbilities().creativeMode && itemStack.getCount() == 1) {
-            this.writeNbt(world.getRegistryKey(), blockPos, itemStack.getOrCreateNbt());
-        } else {
-            ItemStack itemStack2 = new ItemStack(initItems.WAYPOINT_COMPASS_ITEM, 1);
-            NbtCompound nbtCompound = itemStack.hasNbt() ? itemStack.getNbt().copy() : new NbtCompound();
-            itemStack2.setNbt(nbtCompound);
-            if (!playerEntity.getAbilities().creativeMode) {
-                itemStack.decrement(1);
-            }
-            this.writeNbt(world.getRegistryKey(), blockPos, nbtCompound);
-            if (!playerEntity.getInventory().insertStack(itemStack2)) {
-                playerEntity.dropItem(itemStack2, false);
-            }
-        }
+        this.writeNbt(world.getRegistryKey(), blockPos, itemStack.getOrCreateNbt());
         return ActionResult.success(world.isClient);
     }
-    /*@Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack item = user.getStackInHand(hand);
-        if(!world.isClient && !item.hasNbt()){
-            BlockPos pos = user.getBlockPos();
-            world.playSound(null, pos, SoundEvents.ITEM_LODESTONE_COMPASS_LOCK, SoundCategory.PLAYERS, 1.0f, 1.0f);
-            this.writeNbt(world.getRegistryKey(), pos, item.getOrCreateNbt());
-        }
-        return TypedActionResult.pass(user.getStackInHand(hand));
-    }*/
 
     @Override public boolean hasGlint(ItemStack stack){
         return stack.hasNbt();
