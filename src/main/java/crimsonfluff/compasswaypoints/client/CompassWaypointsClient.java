@@ -30,7 +30,8 @@ public class CompassWaypointsClient implements ClientModInitializer {
 
             @Override
             public float unclampedCall(ItemStack stack, ClientWorld world, LivingEntity entityLiving, int seed) {
-                if (entityLiving == null && !stack.isInFrame()) {
+                if(!stack.hasNbt()) return 0.0F;
+                if (entityLiving == null && !stack.isInFrame() ) {
                     return 0.0F;
                 } else {
                     final boolean entityExists = entityLiving != null;
@@ -72,8 +73,7 @@ public class CompassWaypointsClient implements ClientModInitializer {
 
             private double getAngle(ClientWorld world, Entity entity, ItemStack stack) {
                 if (stack.getItem() == initItems.WAYPOINT_COMPASS_ITEM) {
-                    WaypointCompassItem compassItem = (WaypointCompassItem) stack.getItem();
-                    BlockPos pos = NbtHelper.toBlockPos(stack.getNbt().getCompound(WaypointCompassItem.LODESTONE_POS_KEY));
+                    BlockPos pos = NbtHelper.toBlockPos(stack.getNbt().getCompound(WaypointCompassItem.POS));
                     return Math.atan2((double) pos.getZ() - entity.getPos().z, (double) pos.getX() - entity.getPos().x);
                 }
                 return 0.0D;

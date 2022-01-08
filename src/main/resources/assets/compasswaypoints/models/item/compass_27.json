@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "compasswaypoints:item/compass_27"
+  }
+}
